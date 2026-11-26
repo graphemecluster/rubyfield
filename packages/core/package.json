@@ -1,6 +1,6 @@
 {
 	"name": "rubyfield",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Plain-text field with live, read-only ruby annotations. Seamlessly render Pinyin, Jyutping, Furigana, or any annotations while you type",
 	"repository": {
 		"type": "git",
