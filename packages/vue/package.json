@@ -1,0 +1,43 @@
+{
+	"name": "@rubyfield/vue",
+	"version": "0.1.0",
+	"description": "Rubyfield Vue 3 component.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/graphemecluster/rubyfield.git",
+		"directory": "packages/vue"
+	},
+	"license": "MIT",
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsup src/index.ts --format esm --dts --clean"
+	},
+	"dependencies": {
+		"@floating-ui/dom": "^1.7.4",
+		"@tiptap/core": "3.35.0",
+		"@tiptap/pm": "3.35.0",
+		"@tiptap/vue-3": "3.35.0",
+		"rubyfield": "workspace:*"
+	},
+	"peerDependencies": {
+		"vue": "^3.5.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

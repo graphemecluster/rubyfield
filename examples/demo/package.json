@@ -1,0 +1,20 @@
+{
+	"name": "@rubyfield/demo",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "bun prepare.ts && vite --host 127.0.0.1 --port 5173",
+		"build": "bun prepare.ts && vite build",
+		"preview": "vite preview --host 127.0.0.1"
+	},
+	"dependencies": {
+		"@rubyfield/react": "workspace:*",
+		"kuromoji": "^0.1.2",
+		"pinyin-pro": "^3.27.0",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1",
+		"rubyfield": "workspace:*",
+		"to-jyutping": "^3.1.1",
+		"wanakana": "^5.3.1"
+	}
+}

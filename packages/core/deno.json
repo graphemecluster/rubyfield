@@ -1,0 +1,12 @@
+{
+	"name": "@rubyfield/core",
+	"version": "0.1.0",
+	"license": "MIT",
+	"exports": {
+		".": "./src/index.ts",
+		"./session": "./src/session.ts"
+	},
+	"publish": {
+		"include": ["src", "package.json", "README.md", "LICENSE"]
+	}
+}

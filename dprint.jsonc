@@ -1,0 +1,45 @@
+// Adopt from https://github.com/microsoft/TypeScript with minor changes
+{
+	"indentWidth": 4,
+	"lineWidth": 1000,
+	"useTabs": true,
+	"typescript": {
+		"semicolons": "prefer",
+		"quoteStyle": "preferDouble",
+		"quoteProps": "consistent",
+		"useBraces": "whenNotSingleLine",
+		"bracePosition": "sameLineUnlessHanging",
+		"singleBodyPosition": "sameLine",
+		"nextControlFlowPosition": "nextLine",
+		"trailingCommas": "onlyMultiLine",
+		"operatorPosition": "nextLine",
+		"preferHanging": false,
+
+		"arrowFunction.useParentheses": "preferNone",
+		"jsx.bracketPosition": "sameLine",
+		"jsx.forceNewLinesSurroundingContent": false,
+		"jsx.multiLineParens": "never",
+		"functionExpression.spaceAfterFunctionKeyword": true,
+		"constructorType.spaceAfterNewKeyword": true,
+		"constructSignature.spaceAfterNewKeyword": true,
+
+		"module.importGroups": [
+			{ "match": "builtin" },
+			{ "match": "external" },
+			{ "match": [{ "pattern": "rubyfield" }, { "pattern": "rubyfield/**" }, { "pattern": "@rubyfield/**" }] },
+			{ "match": ["parent", "sibling", "index"] },
+			{ "match": "type" }
+		]
+	},
+	"json": {
+		"trailingCommas": "never"
+	},
+	"excludes": [
+		"node_modules",
+		"dist"
+	],
+	"plugins": [
+		"https://plugins.dprint.dev/typescript-0.101.0.wasm",
+		"https://plugins.dprint.dev/json-0.26.0.wasm"
+	]
+}

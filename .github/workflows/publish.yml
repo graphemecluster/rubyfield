@@ -1,0 +1,112 @@
+name: Publish packages and create release
+
+on:
+  push:
+    tags: ["v[0-9]*"]
+
+permissions:
+  contents: read
+
+# Serialize releases, including reruns after a partial registry failure.
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+      - name: Update npm for trusted publishing
+        run: npm install --global npm@latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Check formatting
+        run: bun run format:check
+      - name: Validate release versions
+        run: |
+          bun --eval '
+            import { appendFileSync } from "node:fs";
+            const version = process.env.GITHUB_REF_NAME.slice(1);
+            for (const name of ["core", "react", "vue"]) {
+              const path = `packages/${name}`;
+              const npm = await Bun.file(`${path}/package.json`).json();
+              const jsr = await Bun.file(`${path}/deno.json`).json();
+              if (npm.version !== version || jsr.version !== version) {
+                throw new Error(`${path}: npm and JSR versions must match tag v${version}`);
+              }
+              const expected = `git+https://github.com/${process.env.GITHUB_REPOSITORY}.git`;
+              if (npm.repository.url !== expected) throw new Error(`${path}: repository URL must be ${expected}`);
+            }
+            const config = await Bun.file("deno.json").json();
+            for (const [key, suffix] of [["rubyfield", ""], ["rubyfield/session", "/session"]]) {
+              if (config.imports[key] !== `jsr:@rubyfield/core@^${version}${suffix}`) {
+                throw new Error(`deno.json: update ${key} to the release version`);
+              }
+            }
+            appendFileSync(process.env.GITHUB_ENV, `NPM_DIST_TAG=${version.includes("-") ? "next" : "latest"}\n`);
+          '
+      - name: Check types
+        run: bun run typecheck
+      - name: Build packages and demo
+        run: bun run build
+      - name: Install Chromium
+        run: bunx --no-install playwright-core install --with-deps chromium
+      - name: Run tests
+        run: bun test tests
+      - name: Pack and check npm packages
+        run: |
+          mkdir -p "$RUNNER_TEMP/npm"
+          for package in core react vue; do
+            (cd "packages/$package" && bun pm pack --filename "$RUNNER_TEMP/npm/$package.tgz")
+            npm publish "$RUNNER_TEMP/npm/$package.tgz" --dry-run --access public --tag "$NPM_DIST_TAG"
+          done
+      - name: Check JSR packages
+        run: bunx --no-install jsr publish --dry-run
+      - name: Publish npm packages
+        run: |
+          for package in core react vue; do
+            name=$(jq -r .name "packages/$package/package.json")
+            version=$(jq -r .version "packages/$package/package.json")
+            # Treat E404 as a missing public version; other registry errors must stop the release.
+            if npm view "$name@$version" version --json > "$RUNNER_TEMP/npm-version.json"; then
+              echo "$name@$version is already published; skipping."
+            elif jq -e '.error.code == "E404"' "$RUNNER_TEMP/npm-version.json" > /dev/null; then
+              npm publish "$RUNNER_TEMP/npm/$package.tgz" --access public --tag "$NPM_DIST_TAG"
+            else
+              cat "$RUNNER_TEMP/npm-version.json"
+              exit 1
+            fi
+          done
+      - name: Publish JSR packages
+        run: bunx --no-install jsr publish
+
+  release:
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if ! gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            args=(--verify-tag --generate-notes --title "$GITHUB_REF_NAME")
+            if [[ "$GITHUB_REF_NAME" == *-* ]]; then args+=(--prerelease); fi
+            gh release create "$GITHUB_REF_NAME" "${args[@]}"
+          fi

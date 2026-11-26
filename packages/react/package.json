@@ -1,0 +1,43 @@
+{
+	"name": "@rubyfield/react",
+	"version": "0.1.0",
+	"description": "Rubyfield React component.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/graphemecluster/rubyfield.git",
+		"directory": "packages/react"
+	},
+	"license": "MIT",
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsup src/index.tsx --format esm --dts --clean"
+	},
+	"dependencies": {
+		"@tiptap/core": "3.35.0",
+		"@tiptap/pm": "3.35.0",
+		"@tiptap/react": "3.35.0",
+		"rubyfield": "workspace:*"
+	},
+	"peerDependencies": {
+		"react": "^18.0.0 || ^19.0.0",
+		"react-dom": "^18.0.0 || ^19.0.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

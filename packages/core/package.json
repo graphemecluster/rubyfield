@@ -1,0 +1,46 @@
+{
+	"name": "rubyfield",
+	"version": "0.1.0",
+	"description": "Plain-text field with live, read-only ruby annotations.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/graphemecluster/rubyfield.git",
+		"directory": "packages/core"
+	},
+	"license": "MIT",
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./session": {
+			"types": "./dist/session.d.ts",
+			"import": "./dist/session.js"
+		}
+	},
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"dist",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsup src/index.ts src/session.ts --format esm --dts --clean"
+	},
+	"dependencies": {
+		"@tiptap/core": "3.35.0",
+		"@tiptap/extension-document": "3.35.0",
+		"@tiptap/extension-paragraph": "3.35.0",
+		"@tiptap/extension-ruby-text": "3.35.0",
+		"@tiptap/extension-text": "3.35.0",
+		"@tiptap/extensions": "3.35.0",
+		"@tiptap/pm": "3.35.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

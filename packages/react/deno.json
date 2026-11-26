@@ -1,0 +1,9 @@
+{
+	"name": "@rubyfield/react",
+	"version": "0.1.0",
+	"license": "MIT",
+	"exports": "./src/index.tsx",
+	"publish": {
+		"include": ["src", "package.json", "README.md", "LICENSE"]
+	}
+}

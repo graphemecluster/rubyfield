@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"allowImportingTsExtensions": true,
+		"jsx": "react-jsx",
+		"strict": true,
+		"skipLibCheck": true,
+		"noEmit": true,
+		"types": ["node", "vite/client", "bun"],
+		"paths": {
+			"rubyfield": ["./packages/core/src/index.ts"],
+			"rubyfield/session": ["./packages/core/src/session.ts"],
+			"@rubyfield/react": ["./packages/react/src/index.tsx"],
+			"@rubyfield/vue": ["./packages/vue/src/index.ts"]
+		}
+	},
+	"include": ["packages/**/*.ts", "packages/**/*.tsx", "examples/**/*.ts", "examples/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx", "vite.shared.ts"]
+}
