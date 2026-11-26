@@ -65,6 +65,33 @@ describe("browser integration", () => {
 		expect(errors).toEqual([]);
 	}, 30_000);
 
+	test("onUpdate errors do not cause duplicate Backspace or Enter edits", async () => {
+		await fixture(page, "core");
+		const errors: string[] = [];
+		page.on("pageerror", error => errors.push(error.message));
+		for (const spaces of [" ", "   "]) {
+			for (const key of ["Backspace", "Enter"]) {
+				await page.evaluate(({ spaces, key }) => {
+					const f = (window as any).fixture;
+					f.setOptions({
+						content: "abc" + (key === "Backspace" ? "\n\n" : "\n") + spaces,
+						onUpdate: () => {
+							throw new Error("consumer update failed");
+						},
+					});
+					f.handle.focus();
+					f.handle.setSelectionRange(key === "Backspace" ? 4 : 3, key === "Backspace" ? 4 : 3);
+				}, { spaces, key });
+				await page.keyboard.press(key);
+				await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+				expect(await page.evaluate(() => (window as any).fixture.handle.value)).toBe("abc" + (key === "Backspace" ? "\n" : "\n\n") + spaces);
+				await page.keyboard.type("X");
+				expect(await page.evaluate(() => (window as any).fixture.handle.value)).toBe(key === "Backspace" ? "abcX\n" + spaces : "abc\nX\n" + spaces);
+			}
+		}
+		expect(errors).toEqual(Array(8).fill("consumer update failed"));
+	});
+
 	for (const framework of ["core", "react", "vue"]) {
 		test(`${framework}: Enter splits annotated text without inserting spaces`, async () => {
 			await fixture(page, framework);

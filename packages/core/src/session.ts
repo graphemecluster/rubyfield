@@ -102,7 +102,16 @@ export class BindingSession {
 				// Regenerating annotations must not report a base-text edit to the caller.
 				if (text === this.lastText) return;
 				this.lastText = text;
-				this.config.onUpdate?.(text);
+				try {
+					this.config.onUpdate?.(text);
+				}
+				catch (error) {
+					// Key handlers must finish and prevent the browser's default edit,
+					// or a callback error can make Enter/Backspace edit the document twice.
+					queueMicrotask(() => {
+						throw error;
+					});
+				}
 			},
 
 			editorProps: {
