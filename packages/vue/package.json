@@ -1,7 +1,7 @@
 {
 	"name": "@rubyfield/vue",
 	"version": "0.1.0",
-	"description": "Rubyfield Vue 3 component.",
+	"description": "Plain-text field Vue component with live, read-only ruby annotations. Seamlessly render Pinyin, Jyutping, Furigana, or any annotations while you type",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/graphemecluster/rubyfield.git",
