@@ -19,7 +19,7 @@ Try the [live demo](https://graphemecluster.github.io/rubyfield/).
 | For | Use Package |
 | --- | --- |
 | Framework-agnostic JavaScript | [rubyfield][core] |
-| React 18+ | [@rubyfield/react][react] [current] |
+| React 18+ (npm); React 19 (JSR) | [@rubyfield/react][react] [current] |
 | Vue 3+ | [@rubyfield/vue][vue] |
 
 ## Quick start
