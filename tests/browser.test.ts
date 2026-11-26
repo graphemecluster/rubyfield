@@ -66,6 +66,44 @@ describe("browser integration", () => {
 	}, 30_000);
 
 	for (const framework of ["core", "react", "vue"]) {
+		test(`${framework}: Enter splits annotated text without inserting spaces`, async () => {
+			await fixture(page, framework);
+			for (const native of [false, true]) {
+				for (const separators of [false, true]) {
+					for (const content of ["你好香港", "a你好香港b", " 你好 "]) {
+						for (let offset = 0; offset <= content.length; offset++) {
+							await page.evaluate(({ content, separators }) => {
+								(window as any).fixture.setOptions({
+									content,
+									annotate: (text: string) => [...text.matchAll(/[你好香港]+/gu)].map(match => [match.index, match.index + match[0].length, "annotation"]),
+									ruby: separators ? { rp: { before: {}, after: {} } } : {},
+								});
+							}, { content, separators });
+							await page.waitForFunction(content => (window as any).fixture.handle.value === content, content);
+							await page.evaluate(offset => {
+								const f = (window as any).fixture;
+								f.handle.focus();
+								f.handle.setSelectionRange(offset, offset);
+								f.closeHistory();
+							}, offset);
+							// Exercise browser-native splitting as well as Tiptap's Enter keymap.
+							if (native) await page.evaluate(() => document.execCommand("insertParagraph"));
+							else await page.keyboard.press("Enter");
+							await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+							const expected = content.slice(0, offset) + "\n" + content.slice(offset);
+							expect(await page.evaluate(() => (window as any).fixture.handle.value), JSON.stringify({ content, offset, native, separators })).toBe(expected);
+							await page.keyboard.press("Control+z");
+							expect(await page.evaluate(() => (window as any).fixture.handle.value)).toBe(content);
+							await page.keyboard.press("Control+Shift+z");
+							expect(await page.evaluate(() => (window as any).fixture.handle.value)).toBe(expected);
+							await page.keyboard.type("X");
+							expect(await page.evaluate(() => (window as any).fixture.handle.value)).toBe(content.slice(0, offset) + "\nX" + content.slice(offset));
+						}
+					}
+				}
+			}
+		}, 30_000);
+
 		test(`${framework}: editing, ruby rendering, attributes, and IME`, async () => {
 			const errors: string[] = [];
 			page.on("pageerror", error => errors.push(error.message));

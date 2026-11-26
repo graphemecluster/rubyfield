@@ -23,6 +23,26 @@ export function rubyOptionsSignature(options: RubyOptions = {}) {
 // This read-only variant replaces that widget plugin and the HTML serializer.
 export function createRubyExtension(getOptions: () => RubyOptions) {
 	return RubyText.extend({
+		parseHTML() {
+			return [
+				...(this.parent?.() ?? []),
+				{
+					tag: "br",
+					ignore: true,
+					getAttrs: (node: HTMLElement) => {
+						const ruby = node.nextSibling;
+						if (ruby?.nodeName !== "RUBY" || !(ruby as HTMLElement).querySelector("rt")) return false;
+						// Native splits can leave a placeholder BR before annotation-only
+						// ruby, even when base text follows; that BR must not become a space.
+						const text = node.ownerDocument.createTreeWalker(ruby, NodeFilter.SHOW_TEXT, {
+							acceptNode: node => node.nodeValue && !node.parentElement?.closest("rt,rp") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
+						});
+						return text.nextNode() ? false : null;
+					},
+				},
+			];
+		},
+
 		addAttributes() {
 			return {
 				rt: { default: null, rendered: false },
