@@ -1,8 +1,8 @@
 {
 	"workspace": ["./packages/core", "./packages/react", "./packages/vue"],
 	"imports": {
-		"rubyfield": "jsr:@rubyfield/core@^0.1.4",
-		"rubyfield/session": "jsr:@rubyfield/core@^0.1.4/session"
+		"rubyfield": "jsr:@rubyfield/core@^0.1.5",
+		"rubyfield/session": "jsr:@rubyfield/core@^0.1.5/session"
 	},
 	"compilerOptions": {
 		"lib": ["ES2022", "DOM", "DOM.Iterable"],

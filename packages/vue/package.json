@@ -1,6 +1,6 @@
 {
 	"name": "@rubyfield/vue",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "Plain-text field Vue component with live, read-only ruby annotations. Seamlessly render Pinyin, Jyutping, Furigana, or any annotations while you type",
 	"repository": {
 		"type": "git",
